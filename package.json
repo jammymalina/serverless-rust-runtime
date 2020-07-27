@@ -1,0 +1,34 @@
+{
+  "name": "serverless-rust-runtime",
+  "version": "0.0.2",
+  "description": "A serverless plugin to build rust aws lambda functions",
+  "main": "index.js",
+  "dependencies": {
+    "@semantics/semantic-version": "0.0.4",
+    "adm-zip": "^0.4.16"
+  },
+  "devDependencies": {
+    "eslint": "^7.5.0",
+    "prettier": "^2.0.5"
+  },
+  "scripts": {
+    "lint": "eslint --ext .js ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jammymalina/serverless-rust-runtime.git"
+  },
+  "keywords": [
+    "serverless",
+    "lambda",
+    "aws",
+    "rust",
+    "runtime"
+  ],
+  "author": "Jakub Jantosik",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jammymalina/serverless-rust-runtime/issues"
+  },
+  "homepage": "https://github.com/jammymalina/serverless-rust-runtime#readme"
+}

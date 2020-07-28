@@ -4,6 +4,7 @@ const path = require('path');
 const CargoBuilder = require('./src/CargoBuilder');
 
 const RUST_RUNTIME = 'rust';
+const BASE_RUNTIME = 'provided';
 
 class ServerlessRustRuntimePlugin {
   constructor(serverless, options) {
@@ -69,6 +70,7 @@ class ServerlessRustRuntimePlugin {
       const artifactPath = this.cargoBuilder.getArtifactPath(func);
       func.package = func.package || {};
       func.package.artifact = artifactPath;
+      func.runtime = BASE_RUNTIME;
 
       return func;
     });

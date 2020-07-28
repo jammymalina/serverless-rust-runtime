@@ -79,7 +79,7 @@ class CargoBuilder {
     const { cargoPackage } = this.getBinaryInfo(func);
     const defaultArgs = ['build', '-p', cargoPackage];
     const profileArgs = this.isReleaseBuild(func) ? ['--release'] : [];
-    const cargoFlags = (this.getCargoFlags() || '').split(/\s+/);
+    const cargoFlags = (this.getCargoFlags(func) || '').split(/\s+/);
     const targetArgs = this.getPlatformTarget() ? ['--target', this.getPlatformTarget()] : [];
     return [...defaultArgs, ...profileArgs, ...targetArgs, ...cargoFlags].filter((arg) => !!arg);
   }
@@ -170,7 +170,7 @@ class CargoBuilder {
     const profile = this.getProfile(func);
     const rustArgs = [];
     rustArgs.push('-e', `PROFILE=${profile}`);
-    const cargoFlags = this.getCargoFlags();
+    const cargoFlags = this.getCargoFlags(func);
     const packageArgs = cargoFlags ? `${cargoFlags} -p ${cargoPackage}` : `-p ${cargoPackage}`;
 
     rustArgs.push('-e', `CARGO_FLAGS=${packageArgs}`);

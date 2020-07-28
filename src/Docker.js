@@ -4,13 +4,13 @@ const spawn = require('./spawn');
 
 class Docker {
   constructor(serverless, config) {
-    this.dockerCommand = this.docker.config.cli || process.env.SLS_DOCKER_CLI || 'docker';
-    this.serverless = serverless;
     this.config = config;
+    this.serverless = serverless;
+    this.dockerCommand = this.config.docker.cli || process.env.SLS_DOCKER_CLI || 'docker';
   }
 
   isDockerDaemonRunning() {
-    const { status } = spawn(this.dockerCommand, 'version');
+    const { status } = spawn(this.dockerCommand, ['version']);
     return status === 0;
   }
 
@@ -33,7 +33,7 @@ class Docker {
   }
 
   isImageBuilt() {
-    const { status } = spawn(this.dockerCommand, `image inspect ${this.getImage()}`);
+    const { status } = spawn(this.dockerCommand, ['image', 'inspect', this.getImage()]);
     return status === 0;
   }
 
@@ -43,13 +43,14 @@ class Docker {
         `Docker image ${this.getImage()} cannot be found, make sure the configuration is correct or enable autobuild`
       );
     }
-    this.serverless.cli.log(`Building docker image ${this.getImage()}, rust version: ${this.config.rust.version}`);
-    const { status } = spawn(
-      this.dockerCommand,
-      `build --build-arg RUST_VERSION=${
-        this.config.rust.version
-      } -t ${this.getImage()} https://github.com/jammymalina/aws-lambda-rust-runtime.git`
-    );
+    const { status } = spawn(this.dockerCommand, [
+      'build',
+      '--build-arg',
+      `RUST_VERSION=${this.config.rust.version}`,
+      '-t',
+      this.getImage(),
+      'https://github.com/jammymalina/aws-lambda-rust-runtime.git',
+    ]);
     if (status !== 0) {
       throw new Error('Autobuild of docker image failed');
     }
@@ -68,7 +69,6 @@ class Docker {
       this.buildImage();
     }
     const args = this.getDockerArgs(buildArgs);
-    this.serverless.cli.log(`Running containerized build with ${this.dockerCommand}`);
 
     return spawn(this.dockerCommand, args);
   }

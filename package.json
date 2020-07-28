@@ -1,6 +1,6 @@
 {
   "name": "serverless-rust-runtime",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A serverless plugin to build rust aws lambda functions",
   "main": "index.js",
   "dependencies": {

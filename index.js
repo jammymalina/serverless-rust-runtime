@@ -36,6 +36,7 @@ class ServerlessRustRuntimePlugin {
           tag: undefined,
           autobuild: false,
           cli: 'docker',
+          args: '',
         },
         custom.docker
       ),

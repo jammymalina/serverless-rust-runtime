@@ -69,13 +69,17 @@ class CargoBuilder {
     return func.rust;
   }
 
+  getCargoFlags(func) {
+    const funcArgs = this.getFuncArgs(func);
+    return (funcArgs || {}).cargoFlags || this.config.rust.cargoFlags;
+  }
+
   // Local build
   getLocalBuildArgs(func) {
-    const funcArgs = this.getFuncArgs(func);
     const { cargoPackage } = this.getBinaryInfo(func);
     const defaultArgs = ['build', '-p', cargoPackage];
     const profileArgs = this.isReleaseBuild(func) ? ['--release'] : [];
-    const cargoFlags = ((funcArgs || {}).cargoFlags || this.config.rust.cargoFlags || '').split(/\s+/);
+    const cargoFlags = (this.getCargoFlags() || '').split(/\s+/);
     const targetArgs = this.getPlatformTarget() ? ['--target', this.getPlatformTarget()] : [];
     return [...defaultArgs, ...profileArgs, ...targetArgs, ...cargoFlags].filter((arg) => !!arg);
   }
@@ -144,7 +148,7 @@ class CargoBuilder {
 
   // Docker build
   getDockerBuildArgs(func) {
-    const binary = this.getBinaryInfo(func);
+    const { binary, cargoPackage } = this.getBinaryInfo(func);
     const cargoHome = process.env.CARGO_HOME || path.join(os.homedir(), '.cargo');
     const cargoRegistry = path.join(cargoHome, 'registry');
     const cargoDownloads = path.join(cargoHome, 'git');
@@ -163,14 +167,20 @@ class CargoBuilder {
       `${cargoDownloads}:/root/.cargo/git`,
     ];
 
-    return [...defaultArgs];
+    const profile = this.getProfile(func);
+    const rustArgs = [];
+    rustArgs.push('-e', `PROFILE=${profile}`);
+    const cargoFlags = this.getCargoFlags();
+    const packageArgs = cargoFlags ? `${cargoFlags} -p ${cargoPackage}` : `-p ${cargoPackage}`;
+
+    rustArgs.push('-e', `CARGO_FLAGS=${packageArgs}`);
+
+    return [...defaultArgs, ...rustArgs];
   }
 
   buildDocker(func) {
     const args = this.getDockerBuildArgs(func);
-    const docker = new Docker(this.config);
-
-    this.serverless.cli.log(`Running docker build with ${docker.dockerCommand}`);
+    const docker = new Docker(this.serverless, this.config);
 
     return docker.build(args);
   }

@@ -35,7 +35,11 @@ class ServerlessRustRuntimePlugin {
         {
           repository: 'jammymalina/aws-lambda-rust-runtime',
           tag: undefined,
-          autobuild: false,
+          autobuild: {
+            enabled: false,
+            githubUrl: 'https://github.com/jammymalina/aws-lambda-rust-runtime',
+            buildArgs: '--build-arg RUST_VERSION=stable',
+          },
           cli: 'docker',
           args: '',
         },

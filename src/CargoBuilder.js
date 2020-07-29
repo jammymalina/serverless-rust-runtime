@@ -4,6 +4,7 @@ const AdmZip = require('adm-zip');
 const { mkdirSync } = require('fs');
 const os = require('os');
 const path = require('path');
+const ConfigurationValidator = require('./ConfigurationValidator');
 const Docker = require('./Docker');
 const spawn = require('./spawn');
 
@@ -186,6 +187,8 @@ class CargoBuilder {
   }
 
   build(func) {
+    const configurationValidator = new ConfigurationValidator();
+    configurationValidator.validate(this.config);
     return this.isLocalBuild(func) ? this.buildLocal(func) : this.buildDocker(func);
   }
 }

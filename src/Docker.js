@@ -38,18 +38,18 @@ class Docker {
   }
 
   buildImage() {
-    if (!this.config.docker.autobuild) {
+    if (!this.config.docker.autobuild.enabled) {
       throw new Error(
         `Docker image ${this.getImage()} cannot be found, make sure the configuration is correct or enable autobuild`
       );
     }
+    const buildArgs = this.docker.autobuild.buildArgs.split(/\s+/);
     const { status } = spawn(this.dockerCommand, [
       'build',
-      '--build-arg',
-      `RUST_VERSION=${this.config.rust.version}`,
+      ...buildArgs,
       '-t',
       this.getImage(),
-      'https://github.com/jammymalina/aws-lambda-rust-runtime.git',
+      this.docker.autobuild.githubUrl,
     ]);
     if (status !== 0) {
       throw new Error('Autobuild of docker image failed');

@@ -5,14 +5,19 @@
   "main": "index.js",
   "dependencies": {
     "@semantics/semantic-version": "0.0.4",
-    "adm-zip": "^0.4.16"
+    "adm-zip": "^0.4.16",
+    "ajv": "^6.12.3"
   },
   "devDependencies": {
     "eslint": "^7.5.0",
     "jest": "^26.1.0",
     "prettier": "^2.0.5"
   },
+  "files": [
+    "/src"
+  ],
   "scripts": {
+    "test": "jest",
     "lint": "eslint --ext .js ."
   },
   "repository": {

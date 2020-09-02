@@ -86,4 +86,44 @@ describe('ConfigurationValidator', () => {
     };
     expect(() => validator.validate(config)).toThrow(new Error('Configuration is invalid: profile is invalid'));
   });
+
+  it('should validate rust function configuration, valid rust config', () => {
+    const validator = new ConfigurationValidator();
+    const func = {
+      rust: {
+        profile: 'release',
+        cargoFlags: 'aaa',
+        localBuild: true,
+      },
+    };
+    expect(() => validator.validateRustFunc(func)).not.toThrow();
+  });
+
+  it('should validate rust function configuration, undefined rust config', () => {
+    const validator = new ConfigurationValidator();
+    const func = {
+      rust: undefined,
+    };
+    expect(() => validator.validateRustFunc(func)).not.toThrow();
+  });
+
+  it('should validate rust function configuration, empty rust config', () => {
+    const validator = new ConfigurationValidator();
+    const func = {
+      rust: {},
+    };
+    expect(() => validator.validateRustFunc(func)).not.toThrow();
+  });
+
+  it('should validate rust function configuration, invalid rust config', () => {
+    const validator = new ConfigurationValidator();
+    const func = {
+      rust: {
+        profile: 'invalid',
+      },
+    };
+    expect(() => validator.validateRustFunc(func)).toThrow(
+      new Error('Function configuration is invalid: profile is invalid')
+    );
+  });
 });

@@ -1,7 +1,7 @@
 'use strict';
 
 const AdmZip = require('adm-zip');
-const { mkdirSync } = require('fs');
+const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const ConfigurationValidator = require('./ConfigurationValidator');
@@ -16,9 +16,13 @@ class CargoBuilder {
     };
   }
 
+  getFuncRustConfig(func) {
+    return func.rust || {};
+  }
+
   createLocalDir(targetDir) {
     try {
-      mkdirSync(targetDir, { recursive: true });
+      fs.mkdirSync(targetDir, { recursive: true });
     } catch {
       this.serverless.cli.log(`Directory ${targetDir} already exists`);
     }
@@ -59,20 +63,27 @@ class CargoBuilder {
   }
 
   getProfile(func) {
-    return (func.rust || {}).profile || this.config.rust.profile;
+    const funcConfig = this.getFuncRustConfig(func);
+    if (funcConfig.profile !== undefined) {
+      return funcConfig.profile;
+    }
+    return this.config.rust.profile;
   }
 
   isLocalBuild(func) {
-    return (func.rust || {}).localBuild || this.config.rust.localBuild;
-  }
-
-  getFuncArgs(func) {
-    return func.rust;
+    const funcConfig = this.getFuncRustConfig(func);
+    if (funcConfig.localBuild !== undefined) {
+      return funcConfig.localBuild;
+    }
+    return this.config.rust.localBuild;
   }
 
   getCargoFlags(func) {
-    const funcArgs = this.getFuncArgs(func);
-    return (funcArgs || {}).cargoFlags || this.config.rust.cargoFlags;
+    const funcConfig = this.getFuncRustConfig(func);
+    if (funcConfig.cargoFlags !== undefined) {
+      return funcConfig.cargoFlags;
+    }
+    return this.config.rust.cargoFlags;
   }
 
   // Local build
@@ -189,6 +200,7 @@ class CargoBuilder {
   build(func) {
     const configurationValidator = new ConfigurationValidator();
     configurationValidator.validate(this.config);
+    configurationValidator.validateRustFunc(func);
     return this.isLocalBuild(func) ? this.buildLocal(func) : this.buildDocker(func);
   }
 }

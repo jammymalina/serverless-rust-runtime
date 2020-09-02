@@ -5,6 +5,7 @@ const { semanticVersion } = require('@semantics/semantic-version');
 const SchemaErrorTransformer = require('./SchemaErrorTransformer');
 
 const DEFAULT_MESSAGE_PREFIX = 'Configuration is invalid:';
+const DEFAULT_RUST_FUNC_MESSAGE_PREFIX = 'Function configuration is invalid:';
 
 class ConfigurationValidator {
   constructor() {
@@ -13,6 +14,7 @@ class ConfigurationValidator {
     this.addSchemaComponent('rustVersion', this.isRustVersionValid.bind(this));
 
     this.schemaValidateFunction = this.ajv.compile(this.getConfigurationSchema());
+    this.schemaRustFuncValidateFunction = this.ajv.compile(this.getRustFuncConfigurationSchema());
     this.errorTransformer = new SchemaErrorTransformer();
   }
 
@@ -33,6 +35,20 @@ class ConfigurationValidator {
     }
     const errors = this.schemaValidateFunction.errors;
     const error = this.errorTransformer.transform(errors[0], DEFAULT_MESSAGE_PREFIX);
+    throw error;
+  }
+
+  isRustFuncValid(func) {
+    return this.schemaRustFuncValidateFunction(func);
+  }
+
+  validateRustFunc(func) {
+    const rustConfig = func.rust || {};
+    if (this.isRustFuncValid(rustConfig)) {
+      return;
+    }
+    const errors = this.schemaRustFuncValidateFunction.errors;
+    const error = this.errorTransformer.transform(errors[0], DEFAULT_RUST_FUNC_MESSAGE_PREFIX);
     throw error;
   }
 
@@ -114,6 +130,25 @@ class ConfigurationValidator {
         },
         rust: this.getRustConfigurationSchema(),
         docker: this.getDockerConfigurationSchema(),
+      },
+    };
+  }
+
+  getRustFuncConfigurationSchema() {
+    return {
+      type: 'object',
+      additionalProperties: true,
+      properties: {
+        profile: {
+          type: 'string',
+          enum: ['dev', 'release'],
+        },
+        cargoFlags: {
+          type: 'string',
+        },
+        localBuild: {
+          type: 'boolean',
+        },
       },
     };
   }

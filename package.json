@@ -3,16 +3,6 @@
   "version": "1.0.0",
   "description": "A serverless plugin to build rust aws lambda functions",
   "main": "index.js",
-  "dependencies": {
-    "@semantics/semantic-version": "0.0.4",
-    "adm-zip": "^0.4.16",
-    "ajv": "^6.12.3"
-  },
-  "devDependencies": {
-    "eslint": "^7.5.0",
-    "jest": "^26.1.0",
-    "prettier": "^2.0.5"
-  },
   "files": [
     "/src"
   ],
@@ -36,5 +26,15 @@
   "bugs": {
     "url": "https://github.com/jammymalina/serverless-rust-runtime/issues"
   },
-  "homepage": "https://github.com/jammymalina/serverless-rust-runtime#readme"
+  "homepage": "https://github.com/jammymalina/serverless-rust-runtime#readme",
+  "devDependencies": {
+    "eslint": "^7.8.1",
+    "jest": "^26.4.2",
+    "prettier": "^2.1.1"
+  },
+  "dependencies": {
+    "@semantics/semantic-version": "0.0.4",
+    "adm-zip": "^0.4.16",
+    "ajv": "^6.12.4"
+  }
 }

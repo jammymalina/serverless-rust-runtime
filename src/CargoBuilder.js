@@ -16,8 +16,24 @@ class CargoBuilder {
     };
   }
 
+  getBinaryInfo(func) {
+    const [cargoPackage, binary] = func.handler.split('.');
+    return {
+      cargoPackage,
+      binary: binary || cargoPackage,
+    };
+  }
+
   getFuncRustConfig(func) {
     return func.rust || {};
+  }
+
+  getProfile(func) {
+    const funcConfig = this.getFuncRustConfig(func);
+    if (funcConfig.profile !== undefined) {
+      return funcConfig.profile;
+    }
+    return this.config.rust.profile;
   }
 
   createLocalDir(targetDir) {
@@ -52,22 +68,6 @@ class CargoBuilder {
       return 'x86_64-unknown-linux-musl';
     }
     return undefined;
-  }
-
-  getBinaryInfo(func) {
-    const [cargoPackage, binary] = func.handler.split('.');
-    return {
-      cargoPackage,
-      binary: binary || cargoPackage,
-    };
-  }
-
-  getProfile(func) {
-    const funcConfig = this.getFuncRustConfig(func);
-    if (funcConfig.profile !== undefined) {
-      return funcConfig.profile;
-    }
-    return this.config.rust.profile;
   }
 
   isLocalBuild(func) {
